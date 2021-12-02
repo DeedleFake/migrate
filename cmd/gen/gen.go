@@ -11,7 +11,7 @@ import (
 func main() {
 	funcs, err := gen.Funcs(context.TODO(), os.Args[1])
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error: %v", err)
+		fmt.Fprintf(os.Stderr, "Failed to load migrations:\n%v", err)
 		os.Exit(1)
 	}
 	for _, f := range funcs {

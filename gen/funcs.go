@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/DeedleFake/migrate/internal/config"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -20,7 +21,7 @@ func (err errSlice) Error() string {
 
 	var sep string
 	for _, err := range err {
-		fmt.Fprintf(&buf, "%v%v", sep, err.Msg)
+		fmt.Fprintf(&buf, "%v%v", sep, err)
 		sep = "\n"
 	}
 
@@ -66,7 +67,7 @@ func Funcs(ctx context.Context, pkg string) (funcs []string, err error) {
 
 	scope := target.Types.Scope()
 	for _, n := range scope.Names() {
-		if !strings.HasPrefix(n, "Migrate") {
+		if !strings.HasPrefix(n, config.MigrationPrefix) {
 			continue
 		}
 
