@@ -3,7 +3,6 @@ package gen
 import (
 	"context"
 	"fmt"
-	"go/token"
 	"go/types"
 	"path/filepath"
 	"strings"
@@ -28,6 +27,14 @@ func (err errSlice) Error() string {
 	return buf.String()
 }
 
+// Funcs returns a list of the names of functions in the given package
+// that match the migration function signature. Functions must begin
+// with the prefix "Migrate" have the signature
+//
+//    func(*migrate.M)
+//
+// The returned slice is sorted according to the standard string
+// ordering.
 func Funcs(ctx context.Context, pkg string) (funcs []string, err error) {
 	path, err := filepath.Abs(pkg)
 	if err != nil {
@@ -55,15 +62,7 @@ func Funcs(ctx context.Context, pkg string) (funcs []string, err error) {
 		target = pkg
 	}
 
-	m := self.Types.Scope().Lookup("M").Type()
-	sig := types.NewSignature(
-		nil,
-		types.NewTuple(
-			types.NewParam(token.NoPos, nil, "m", types.NewPointer(m)),
-		),
-		nil,
-		false,
-	)
+	sig := self.Types.Scope().Lookup("MigrationFunc").Type().Underlying()
 
 	scope := target.Types.Scope()
 	for _, n := range scope.Names() {
