@@ -8,7 +8,7 @@ import (
 //go:embed *.tmpl
 var fs embed.FS
 
-var Templates = template.Must(template.ParseFS(fs))
+var Templates = template.Must(template.ParseFS(fs, "*.tmpl"))
 
 type RuntimeData struct {
 	SelfPkgPath string

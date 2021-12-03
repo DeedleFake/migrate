@@ -6,12 +6,22 @@ import (
 	{{.SelfPkgPath | printf "%q"}}
 )
 
-var funcs = map[string]{{.SelfPkgName}}.MigrationFunc{ {{- range .Migrations}}
-	{{. | printf "%q"}}: {{.}},
-{{end -}} }
+var funcs = map[string]{{.SelfPkgName}}.MigrationFunc{
+{{range .Migrations}}
+	{{- . | printf "%q"}}: {{. | printf "%v%v" "Migrate"}},
+{{end -}}
+}
 
-// Apply applies the migrations defined in this package to the given
-// database.
-func Apply(ctx context.Context, db *sql.DB) error {
+// Migrations returns the names of every defined migration.
+func Migrations() []string {
+	return []string{
+	{{range .Migrations}}
+		{{- . | printf "%q"}},
+	{{end -}}
+	}
+}
+
+// Apply applies the named migrations to the given database.
+func Apply(ctx context.Context, db *sql.DB, migrations ...string) error {
 	panic("Not implemented.")
 }
