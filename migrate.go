@@ -43,15 +43,21 @@ func (m *Migration) Run(ctx context.Context, db *sql.DB) error {
 }
 
 func flattenDAG(verts map[string]*M) (steps []*M, err error) {
+	defer func() {
+		switch r := recover().(type) {
+		case nil:
+		case error:
+			err = r
+		default:
+			panic(r)
+		}
+	}()
+
 	steps = make([]*M, 0, len(verts))
 
 	visited := make(map[*M]struct{}, len(verts))
 	var inner func(*M)
 	inner = func(m *M) {
-		if err != nil {
-			return
-		}
-
 		if _, ok := visited[m]; ok {
 			return
 		}
@@ -60,12 +66,10 @@ func flattenDAG(verts map[string]*M) (steps []*M, err error) {
 		for _, dep := range m.deps {
 			d, ok := verts[dep]
 			if !ok {
-				err = fmt.Errorf("migration %v depends on non-existent migration %q", m.name, dep)
-				return
+				panic(fmt.Errorf("migration %v depends on non-existent migration %q", m.name, dep))
 			}
 			if _, ok := visited[d]; ok {
-				err = fmt.Errorf("dependency cycle detected: %v -> %v", m.name, dep)
-				return
+				panic(fmt.Errorf("dependency cycle detected: %v -> %v", m.name, dep))
 			}
 			inner(d)
 		}
@@ -77,5 +81,5 @@ func flattenDAG(verts map[string]*M) (steps []*M, err error) {
 		inner(m)
 	}
 
-	return steps, err
+	return steps, nil
 }
