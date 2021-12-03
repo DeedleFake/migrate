@@ -1,8 +1,7 @@
 package migrate
 
-import "github.com/DeedleFake/migrate/internal/config"
-
 type M struct {
+	name   string
 	deps   []string
 	tables []*Table
 }
@@ -21,7 +20,7 @@ type M struct {
 //      m.Require("First")
 //    }
 func (m *M) Require(migration string) {
-	m.deps = append(m.deps, config.MigrationPrefix+migration)
+	m.deps = append(m.deps, migration)
 }
 
 // Table creates a new table with the given name.

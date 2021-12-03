@@ -27,15 +27,13 @@ func (err errSlice) Error() string {
 	return buf.String()
 }
 
-// Funcs returns a list of the names of functions in the given package
-// that match the migration function signature. Functions must begin
-// with the prefix "Migrate" have the signature
-//
-//    func(*migrate.M)
-//
-// The returned slice is sorted according to the standard string
-// ordering.
-func Funcs(ctx context.Context, pkg string) (funcs []string, err error) {
+type Package struct {
+	Name  string
+	Funcs []string
+}
+
+// Load loads migration information from the given package.
+func Load(ctx context.Context, pkg string) (*Package, error) {
 	path, err := filepath.Abs(pkg)
 	if err != nil {
 		return nil, fmt.Errorf("get path to package: %w", err)
@@ -63,6 +61,7 @@ func Funcs(ctx context.Context, pkg string) (funcs []string, err error) {
 	}
 
 	sig := self.Types.Scope().Lookup("MigrationFunc").Type().Underlying()
+	var funcs []string
 
 	scope := target.Types.Scope()
 	for _, n := range scope.Names() {
@@ -78,5 +77,8 @@ func Funcs(ctx context.Context, pkg string) (funcs []string, err error) {
 		funcs = append(funcs, obj.Name())
 	}
 
-	return funcs, nil
+	return &Package{
+		Name:  target.Name,
+		Funcs: funcs,
+	}, nil
 }
