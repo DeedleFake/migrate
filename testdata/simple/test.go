@@ -1,6 +1,6 @@
 package migrations
 
-import "github.com/DeedleFake/migrate"
+import "deedles.dev/migrate"
 
 func Migrate1(m *migrate.M)                       {}
 func Migrate2(m2 *migrate.M)                      { m2.Require("3") }

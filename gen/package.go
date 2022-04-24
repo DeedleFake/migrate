@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/DeedleFake/migrate/internal/config"
+	"deedles.dev/migrate/internal/config"
 	"golang.org/x/tools/go/packages"
 )
 
-const selfPkgPath = "github.com/DeedleFake/migrate"
+const selfPkgPath = "deedles.dev/migrate"
 
 type errSlice []packages.Error
 

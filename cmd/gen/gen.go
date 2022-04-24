@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/DeedleFake/migrate/gen"
+	"deedles.dev/migrate/gen"
 )
 
 func main() {

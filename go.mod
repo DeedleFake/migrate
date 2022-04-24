@@ -1,4 +1,4 @@
-module github.com/DeedleFake/migrate
+module deedles.dev/migrate
 
 go 1.17
 
