@@ -83,3 +83,7 @@ func flattenDAG(verts map[string]*M) (steps []*M, err error) {
 
 	return steps, nil
 }
+
+type sqler interface {
+	sql(Dialect) string
+}

@@ -1,8 +1,9 @@
 package migrate
 
 type T struct {
-	name string
-	cols []any
+	name    string
+	cols    []sqler
+	indices []*Index
 }
 
 func (t T) Name() string {
@@ -24,6 +25,12 @@ func (t *T) Int(name string) *Column[int] {
 	return addColumn[intType, int](t, name)
 }
 
+func (t *T) Index(names ...string) *Index {
+	i := Index{names: names}
+	t.indices = append(t.indices, &i)
+	return &i
+}
+
 type Column[T any] struct {
 	name string
 	t    columnType
@@ -31,12 +38,30 @@ type Column[T any] struct {
 	null bool
 }
 
+func (c Column[T]) sql(d Dialect) string {
+	panic("Not implemented.")
+}
+
 func (c *Column[T]) Default(d T) *Column[T] {
 	c.d = &d
 	return c
 }
 
+func (c *Column[T]) DefaultFunc() *Column[T] {
+	panic("Not implemented.")
+}
+
 func (c *Column[T]) Null(allow bool) *Column[T] {
 	c.null = allow
 	return c
+}
+
+type Index struct {
+	names  []string
+	unique bool
+}
+
+func (i *Index) Unique(unique bool) *Index {
+	i.unique = unique
+	return i
 }
