@@ -3,7 +3,7 @@ package migrate
 type M struct {
 	name   string
 	deps   []string
-	tables []*Table
+	tables []*T
 }
 
 // Require marks another migration as being a dependency of this one.
@@ -23,9 +23,8 @@ func (m *M) Require(migration string) {
 	m.deps = append(m.deps, migration)
 }
 
-// Table creates a new table with the given name.
-func (m *M) Table(name string) *Table {
-	t := &Table{name: name}
-	m.tables = append(m.tables, t)
-	return t
+func (m *M) CreateTable(name string, f func(*T)) {
+	t := T{name: name}
+	m.tables = append(m.tables, &t)
+	f(&t)
 }
