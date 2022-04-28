@@ -12,6 +12,10 @@ func (s *Set[T]) init() {
 	}
 }
 
+func (s Set[T]) Len() int {
+	return len(s.m)
+}
+
 func (s *Set[T]) Add(v T) bool {
 	if s.Contains(v) {
 		return false
