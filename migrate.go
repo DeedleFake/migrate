@@ -29,7 +29,11 @@ func Plan(funcs map[string]MigrationFunc) (*Migration, error) {
 
 	steps := make([]*M, 0, len(verts))
 	for _, m := range verts {
-		m.fillDeps(verts)
+		err := fillDeps(&m.deps, verts)
+		if err != nil {
+			return nil, fmt.Errorf("migration %q dependencies: %w", m.name, err)
+		}
+
 		steps = util.SortedInsertFunc(steps, m, func(v1, v2 *M) int {
 			if v2.deps.Contains(v1.name) {
 				return -1
@@ -64,4 +68,20 @@ func (m *Migration) Steps() []string {
 
 type sqler interface {
 	sql(Dialect) string
+}
+
+func fillDeps(deps *util.Set[string], verts map[string]*M) error {
+	// TODO: Detect dependency cycles.
+	more := true
+	for more {
+		more = false
+		for _, dep := range deps.Slice() {
+			v, ok := verts[dep]
+			if !ok {
+				return fmt.Errorf("no such migration: %q", dep)
+			}
+			more = deps.AddSet(v.deps) || more
+		}
+	}
+	return nil
 }

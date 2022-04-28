@@ -8,16 +8,6 @@ type M struct {
 	tables []*T
 }
 
-func (m *M) fillDeps(verts map[string]*M) {
-	more := true
-	for more {
-		more = false
-		for _, dep := range m.deps.Slice() {
-			more = m.deps.AddSet(verts[dep].deps) || more
-		}
-	}
-}
-
 // Require marks other migrations as being dependencies of this one.
 // In other words, the named migrations should be applied before this
 // one is.
