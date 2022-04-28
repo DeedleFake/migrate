@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	runtime := filepath.Join(os.Args[1], "runtime.go")
+	runtime := filepath.Join(os.Args[1], "runtime_gen.go")
 	err := os.Remove(runtime)
 	if (err != nil) && !os.IsNotExist(err) {
 		fmt.Fprintf(os.Stderr, "Failed to remove existing runtime.go: %v", err)
