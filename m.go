@@ -2,6 +2,7 @@ package migrate
 
 import "deedles.dev/migrate/internal/util"
 
+// M is a type passed to Migrate functions to configure the migration.
 type M struct {
 	name   string
 	deps   util.Set[string]
@@ -30,6 +31,8 @@ func (m *M) Require(migrations ...string) {
 	}
 }
 
+// CreateTable creates a new table using a configuration determined by
+// f.
 func (m *M) CreateTable(name string, f func(*T)) {
 	t := T{name: name}
 	m.tables = append(m.tables, &t)
