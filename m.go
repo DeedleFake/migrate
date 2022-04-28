@@ -1,9 +1,21 @@
 package migrate
 
+import "deedles.dev/migrate/internal/util"
+
 type M struct {
 	name   string
-	deps   []string
+	deps   util.Set[string]
 	tables []*T
+}
+
+func (m *M) fillDeps(verts map[string]*M) {
+	more := true
+	for more {
+		more = false
+		for _, dep := range m.deps.Slice() {
+			more = m.deps.AddSet(verts[dep].deps) || more
+		}
+	}
 }
 
 // Require marks other migrations as being dependencies of this one.
@@ -23,7 +35,9 @@ type M struct {
 //      m.Require("First")
 //    }
 func (m *M) Require(migrations ...string) {
-	m.deps = append(m.deps, migrations...)
+	for _, mig := range migrations {
+		m.deps.Add(mig)
+	}
 }
 
 func (m *M) CreateTable(name string, f func(*T)) {

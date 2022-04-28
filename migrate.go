@@ -4,6 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
+
+	"deedles.dev/migrate/internal/util"
 )
 
 // MigrationFunc is the signature matched by functions that define
@@ -24,9 +27,18 @@ func Plan(funcs map[string]MigrationFunc) (*Migration, error) {
 		verts[n] = &m
 	}
 
-	steps, err := flattenDAG(verts)
-	if err != nil {
-		return nil, fmt.Errorf("calculate migration order: %w", err)
+	steps := make([]*M, 0, len(verts))
+	for _, m := range verts {
+		m.fillDeps(verts)
+		steps = util.SortedInsertFunc(steps, m, func(v1, v2 *M) int {
+			if v2.deps.Contains(v1.name) {
+				return -1
+			}
+			if v1.deps.Contains(v2.name) {
+				return 1
+			}
+			return strings.Compare(v1.name, v2.name)
+		})
 	}
 
 	return &Migration{
@@ -42,46 +54,12 @@ func (m *Migration) Run(ctx context.Context, db *sql.DB) error {
 	panic("Not implemented.")
 }
 
-func flattenDAG(verts map[string]*M) (steps []*M, err error) {
-	defer func() {
-		switch r := recover().(type) {
-		case nil:
-		case error:
-			err = r
-		default:
-			panic(r)
-		}
-	}()
-
-	steps = make([]*M, 0, len(verts))
-
-	visited := make(map[*M]struct{}, len(verts))
-	var inner func(*M)
-	inner = func(m *M) {
-		if _, ok := visited[m]; ok {
-			return
-		}
-		visited[m] = struct{}{}
-
-		for _, dep := range m.deps {
-			d, ok := verts[dep]
-			if !ok {
-				panic(fmt.Errorf("migration %v depends on non-existent migration %q", m.name, dep))
-			}
-			if _, ok := visited[d]; ok {
-				panic(fmt.Errorf("dependency cycle detected: %v -> %v", m.name, dep))
-			}
-			inner(d)
-		}
-
-		steps = append(steps, m)
+func (m *Migration) Steps() []string {
+	steps := make([]string, 0, len(m.steps))
+	for _, s := range m.steps {
+		steps = append(steps, s.name)
 	}
-
-	for _, m := range verts {
-		inner(m)
-	}
-
-	return steps, nil
+	return steps
 }
 
 type sqler interface {
