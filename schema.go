@@ -15,6 +15,7 @@ type schema struct {
 }
 
 func initSchema(ctx context.Context, db *sql.DB) error {
+	// TODO: Dialect support.
 	_, err := db.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS `+schemaTable+` (
 		id BIGINT GENERATED ALWAYS AS IDENTITY,
 		name TEXT NOT NULL
@@ -59,6 +60,7 @@ func loadSchema(ctx context.Context, db *sql.DB) (*schema, error) {
 }
 
 func (s *schema) addPrev(ctx context.Context, tx *sql.Tx, name string) error {
+	// TODO: Dialect support.
 	_, err := tx.ExecContext(ctx, `INSERT INTO `+schemaTable+` (name) VALUES ($1);`, name)
 	if err != nil {
 		return fmt.Errorf("insert into schema table: %w", err)
