@@ -16,11 +16,27 @@ type M struct {
 }
 
 func (m M) migrateUp(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
-	panic("Not implemented.")
+	for _, step := range m.steps {
+		err := step.migrateUp(ctx, tx, dialect)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (m M) migrateDown(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
-	panic("Not implemented.")
+	if m.irreversible {
+		return ErrIrreversible
+	}
+
+	for _, step := range m.steps {
+		err := step.migrateDown(ctx, tx, dialect)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Require marks other migrations as being dependencies of this one.

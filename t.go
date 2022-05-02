@@ -12,11 +12,23 @@ type T struct {
 }
 
 func (t T) migrateUp(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
-	panic("Not implemented.")
+	for _, step := range t.steps {
+		err := step.migrateUp(ctx, tx, dialect)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (t T) migrateDown(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
-	panic("Not implemented.")
+	for _, step := range t.steps {
+		err := step.migrateDown(ctx, tx, dialect)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // Name returns the name of the table being modified.
