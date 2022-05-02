@@ -1,12 +1,25 @@
 package migration
 
-import "deedles.dev/migration/internal/util"
+import (
+	"context"
+	"database/sql"
+
+	"deedles.dev/migration/internal/util"
+)
 
 // M is a type passed to Migrate functions to configure the migration.
 type M struct {
 	name  string
 	deps  util.Set[string]
 	steps []mstep
+}
+
+func (m M) migrateUp(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
+	panic("Not implemented.")
+}
+
+func (m M) migrateDown(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
+	panic("Not implemented.")
 }
 
 // Require marks other migrations as being dependencies of this one.

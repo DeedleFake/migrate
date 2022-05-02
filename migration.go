@@ -39,12 +39,49 @@ func Plan(funcs map[string]MigrationFunc) (*Migration, error) {
 	}, nil
 }
 
-func (m *Migration) Run(ctx context.Context, db *sql.DB, dialect Dialect) error {
-	for _, s := range m.steps {
-		fmt.Printf("%+v\n", s)
+func (m *Migration) migrate(ctx context.Context, db *sql.DB, run func(context.Context, *sql.Tx) error) error {
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("begin transaction: %w", err)
+	}
+	defer tx.Rollback()
+
+	err = run(ctx, tx)
+	if err != nil {
+		return err
 	}
 
-	panic("Not implemented.")
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("commit transaction: %w", err)
+	}
+
+	return nil
+}
+
+func (m *Migration) Up(ctx context.Context, db *sql.DB, dialect Dialect) error {
+	return m.migrate(ctx, db, func(ctx context.Context, tx *sql.Tx) error {
+		for _, step := range m.steps {
+			err := step.migrateUp(ctx, tx, dialect)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func (m *Migration) Down(ctx context.Context, db *sql.DB, dialect Dialect) error {
+	return m.migrate(ctx, db, func(ctx context.Context, tx *sql.Tx) error {
+		for i := len(m.steps) - 1; i >= 0; i-- {
+			step := m.steps[i]
+			err := step.migrateDown(ctx, tx, dialect)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }
 
 // Steps returns the names of the migrations that will be run in the
