@@ -26,7 +26,7 @@ func (s *Set[T]) Add(v T) bool {
 	return true
 }
 
-func (s *Set[T]) AddSet(s2 Set[T]) bool {
+func (s *Set[T]) AddSet(s2 *Set[T]) bool {
 	var r bool
 	for v := range s2.m {
 		r = s.Add(v) || r
@@ -37,6 +37,13 @@ func (s *Set[T]) AddSet(s2 Set[T]) bool {
 func (s *Set[T]) Remove(v T) {
 	s.init()
 	delete(s.m, v)
+}
+
+func (s *Set[T]) RemoveSet(s2 *Set[T]) {
+	s.init()
+	for v := range s2.m {
+		delete(s.m, v)
+	}
 }
 
 func (s Set[T]) Contains(v T) bool {
