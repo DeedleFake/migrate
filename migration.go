@@ -22,6 +22,8 @@ type Migration struct {
 // Plan produces a migration plan for a given set of migration
 // functions. It is intended for internal use.
 func Plan(funcs map[string]MigrationFunc) (*Migration, error) {
+	// TODO: Remove migrations that have already been run previously.
+
 	verts := make(map[string]*M, len(funcs))
 	for n, f := range funcs {
 		m := M{name: n}
@@ -50,6 +52,8 @@ func (m *Migration) migrate(ctx context.Context, db *sql.DB, run func(context.Co
 	if err != nil {
 		return err
 	}
+
+	// TODO: Record successful migrations.
 
 	err = tx.Commit()
 	if err != nil {
