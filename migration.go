@@ -113,7 +113,9 @@ func flattenDAG(verts map[string]*M) (steps []*M, err error) {
 	return steps, nil
 }
 
-// sqler is a type that can convert itself to SQL.
-type sqler interface {
-	sql(Dialect) string
+// A mstep is a step in a migration. It might create a table, modify a
+// column, or do something else entirely.
+type mstep interface {
+	migrateUp(context.Context, *sql.Tx, Dialect) error
+	migrateDown(context.Context, *sql.Tx, Dialect) error
 }

@@ -1,10 +1,22 @@
 package migration
 
+import (
+	"context"
+	"database/sql"
+)
+
 // T provides methods to configure modifications to a database table.
 type T struct {
-	name    string
-	cols    []sqler
-	indices []*Index
+	name  string
+	steps []mstep
+}
+
+func (t T) migrateUp(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
+	panic("Not implemented.")
+}
+
+func (t T) migrateDown(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
+	panic("Not implemented.")
 }
 
 // Name returns the name of the table being modified.
@@ -25,7 +37,7 @@ func (t *T) Int(name string) *Column[int] {
 // Index adds an index to the table that applies to the named columns.
 func (t *T) Index(names ...string) *Index {
 	i := Index{names: names}
-	t.indices = append(t.indices, &i)
+	t.steps = append(t.steps, &i)
 	return &i
 }
 
@@ -37,7 +49,11 @@ type Column[T any] struct {
 	null bool
 }
 
-func (c Column[T]) sql(d Dialect) string {
+func (c Column[T]) migrateUp(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
+	panic("Not implemented.")
+}
+
+func (c Column[T]) migrateDown(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
 	panic("Not implemented.")
 }
 
@@ -70,6 +86,14 @@ type Index struct {
 	unique bool
 }
 
+func (i Index) migrateUp(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
+	panic("Not implemented.")
+}
+
+func (i Index) migrateDown(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
+	panic("Not implemented.")
+}
+
 // Unique sets whether or not the column enforces uniqueness.
 func (i *Index) Unique(unique bool) *Index {
 	i.unique = unique
@@ -80,6 +104,6 @@ func (i *Index) Unique(unique bool) *Index {
 func addColumn[C columnType, V any](t *T, name string) *Column[V] {
 	var ct C
 	c := Column[V]{name: name, t: ct}
-	t.cols = append(t.cols, &c)
+	t.steps = append(t.steps, &c)
 	return &c
 }

@@ -4,9 +4,9 @@ import "deedles.dev/migration/internal/util"
 
 // M is a type passed to Migrate functions to configure the migration.
 type M struct {
-	name   string
-	deps   util.Set[string]
-	tables []*T
+	name  string
+	deps  util.Set[string]
+	steps []mstep
 }
 
 // Require marks other migrations as being dependencies of this one.
@@ -35,6 +35,6 @@ func (m *M) Require(migrations ...string) {
 // f.
 func (m *M) CreateTable(name string, f func(*T)) {
 	t := T{name: name}
-	m.tables = append(m.tables, &t)
+	m.steps = append(m.steps, &t)
 	f(&t)
 }
