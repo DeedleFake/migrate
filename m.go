@@ -9,9 +9,10 @@ import (
 
 // M is a type passed to Migrate functions to configure the migration.
 type M struct {
-	name  string
-	deps  util.Set[string]
-	steps []mstep
+	name         string
+	deps         util.Set[string]
+	steps        []mstep
+	irreversible bool
 }
 
 func (m M) migrateUp(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
@@ -50,4 +51,23 @@ func (m *M) CreateTable(name string, f func(*T)) {
 	t := T{name: name}
 	m.steps = append(m.steps, &t)
 	f(&t)
+}
+
+func (m *M) SQL(stmt string, args ...any) {
+	m.irreversible = true
+	m.steps = append(m.steps, sqlstep{stmt: stmt, args: args})
+}
+
+type sqlstep struct {
+	stmt string
+	args []any
+}
+
+func (s sqlstep) migrateUp(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
+	_, err := tx.ExecContext(ctx, s.stmt, s.args...)
+	return err
+}
+
+func (s sqlstep) migrateDown(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
+	return ErrIrreversible
 }

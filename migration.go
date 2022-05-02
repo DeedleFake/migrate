@@ -3,10 +3,15 @@ package migration
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 
 	"deedles.dev/migration/internal/util"
 	"golang.org/x/exp/slices"
+)
+
+var (
+	ErrIrreversible = errors.New("migration is irreversible")
 )
 
 // MigrationFunc is the signature matched by functions that define
