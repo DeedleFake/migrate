@@ -1,11 +1,11 @@
-package migrate
+package migration
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
 
-	"deedles.dev/migrate/internal/util"
+	"deedles.dev/migration/internal/util"
 	"golang.org/x/exp/slices"
 )
 

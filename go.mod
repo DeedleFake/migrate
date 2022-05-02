@@ -1,4 +1,4 @@
-module deedles.dev/migrate
+module deedles.dev/migration
 
 go 1.18
 

@@ -1,4 +1,4 @@
-package migrate
+package migration
 
 type columnType interface {
 	SQL(Dialect) string

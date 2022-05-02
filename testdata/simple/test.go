@@ -1,7 +1,7 @@
 package migrations
 
-import "deedles.dev/migrate"
+import "deedles.dev/migration"
 
-func Migrate1(m *migrate.M)                       {}
-func Migrate2(m2 *migrate.M)                      { m2.Require("3") }
-func Migrate3(somethingElseCompletely *migrate.M) {}
+func Migrate1(m *migration.M)                       {}
+func Migrate2(m2 *migration.M)                      { m2.Require("3") }
+func Migrate3(somethingElseCompletely *migration.M) {}

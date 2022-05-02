@@ -27,7 +27,7 @@ func Names() []string {
 
 // Apply applies the named migrations to the given database.
 func Apply(ctx context.Context, db *sql.DB, migrations ...string) error {
-	plan, err := migrate.Plan(funcs)
+	plan, err := migration.Plan(funcs)
 	if err != nil {
 		return fmt.Errorf("plan migrations: %w", err)
 	}

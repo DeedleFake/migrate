@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"deedles.dev/migrate/internal/tmpl"
+	"deedles.dev/migration/internal/tmpl"
 )
 
 func Runtime(w io.Writer, pkg *Package) error {

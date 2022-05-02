@@ -1,6 +1,6 @@
-package migrate
+package migration
 
-import "deedles.dev/migrate/internal/util"
+import "deedles.dev/migration/internal/util"
 
 // M is a type passed to Migrate functions to configure the migration.
 type M struct {
@@ -19,9 +19,9 @@ type M struct {
 // The provided migration names should be the name of the migration
 // function minus the "Migrate" prefix. For example,
 //
-//    func MigrateFirst(m *migrate.M) {}
+//    func MigrateFirst(m *migration.M) {}
 //
-//    func MigrateSecond(m *migrate.M) {
+//    func MigrateSecond(m *migration.M) {
 //      // MigrateSecond depends on MigrateFirst.
 //      m.Require("First")
 //    }

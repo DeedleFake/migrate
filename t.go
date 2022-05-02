@@ -1,4 +1,4 @@
-package migrate
+package migration
 
 // T provides methods to configure modifications to a database table.
 type T struct {

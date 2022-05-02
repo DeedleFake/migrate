@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"deedles.dev/migrate/internal/config"
+	"deedles.dev/migration/internal/config"
 	"golang.org/x/tools/go/packages"
 )
 
-const selfPkgPath = "deedles.dev/migrate"
+const selfPkgPath = "deedles.dev/migration"
 
 type errSlice []packages.Error
 

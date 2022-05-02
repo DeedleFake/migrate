@@ -1,4 +1,4 @@
-package migrate
+package migration
 
 // Dialect represents an SQL dialect. Dialects are comparable, and the
 // instances of this struct returned by the various functions in this

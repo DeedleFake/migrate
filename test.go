@@ -6,7 +6,7 @@ package main
 import (
 	"context"
 
-	migrations "deedles.dev/migrate/testdata/simple"
+	migrations "deedles.dev/migration/testdata/simple"
 )
 
 func main() {
