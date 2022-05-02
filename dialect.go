@@ -1,5 +1,7 @@
 package migration
 
+import "strings"
+
 // Dialect represents an SQL dialect. Dialects are comparable, and the
 // instances of this struct returned by the various functions in this
 // package are guaranteed to always be equal to the result of another
@@ -27,3 +29,11 @@ var (
 
 func Postgres() Dialect { return postgres }
 func SQLite3() Dialect  { return sqlite3 }
+
+func (d Dialect) id(name string) string {
+	var str strings.Builder
+	str.WriteRune(d.quoteID)
+	str.WriteString(name)
+	str.WriteRune(d.quoteID)
+	return str.String()
+}
