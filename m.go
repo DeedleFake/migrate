@@ -53,6 +53,20 @@ func (m *M) CreateTable(name string, f func(*T)) {
 	f(&t)
 }
 
+// UpDown registers separate manual steps for migrating up and down.
+// The provided functions should perform opposite operations.
+func (m *M) UpDown(up func(*MUp), down func(*MDown)) {
+	var updown updown
+	m.steps = append(m.steps, &updown)
+	up(&updown.up)
+	down(&updown.down)
+}
+
+// SQL registers a custom SQL statement to be executed as part of the
+// migration.
+//
+// Warning: Use of this method causes the migration to become
+// irreversible. To register reversible SQL statements, use UpDown.
 func (m *M) SQL(stmt string, args ...any) {
 	m.irreversible = true
 	m.steps = append(m.steps, sqlstep{stmt: stmt, args: args})
