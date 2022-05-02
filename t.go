@@ -3,6 +3,7 @@ package migration
 import (
 	"context"
 	"database/sql"
+	"strings"
 )
 
 // T provides methods to configure modifications to a database table.
@@ -13,11 +14,22 @@ type T struct {
 }
 
 func (t T) migrateUp(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
-	panic("Not implemented.")
+	var cols strings.Builder
+	for _, c := range t.cols {
+		cols.WriteString(", ")
+		cols.WriteString(dialect.id(c.name))
+		cols.WriteRune(' ')
+		cols.WriteString(c.t.SQL(dialect))
+		// TODO: Defaults, nullability, and other stuff.
+	}
+
+	_, err := tx.ExecContext(ctx, `CREATE TABLE `+dialect.id(t.name)+`(`+cols.String()+`);`)
+	return err
 }
 
 func (t T) migrateDown(ctx context.Context, tx *sql.Tx, dialect Dialect) error {
-	panic("Not implemented.")
+	_, err := tx.ExecContext(ctx, `DROP TABLE `+dialect.id(t.name)+`;`)
+	return err
 }
 
 // Name returns the name of the table being modified.

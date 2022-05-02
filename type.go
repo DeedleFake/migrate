@@ -7,7 +7,7 @@ type columnType interface {
 type stringType struct{}
 
 func (stringType) SQL(dialect Dialect) string {
-	return "STRING"
+	return "TEXT"
 }
 
 type intType struct{}
