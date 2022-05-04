@@ -32,6 +32,7 @@ func SQLite3() Dialect  { return sqlite3 }
 
 func (d Dialect) id(name string) string {
 	var str strings.Builder
+	str.Grow(len(name) + 2)
 	str.WriteRune(d.quoteID)
 	str.WriteString(name)
 	str.WriteRune(d.quoteID)
