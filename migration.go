@@ -25,6 +25,8 @@ type MigrationPlan struct {
 	steps  []*M
 }
 
+// planUp plans a migration, optionally to a specific target if target
+// is not an empty string.
 func planUp(ctx context.Context, db *sql.DB, funcs map[string]MigrationFunc, target string) (*MigrationPlan, error) {
 	schema, err := loadSchema(ctx, db)
 	if err != nil {
@@ -117,6 +119,8 @@ func (m *MigrationPlan) Steps() []string {
 	return steps
 }
 
+// lineage returns a set of all of the migrations that are
+// dependencies of target, recursively, as well as target itself.
 func lineage(funcs map[string]*M, target string) *util.Set[string] {
 	var lin util.Set[string]
 
