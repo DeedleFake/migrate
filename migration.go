@@ -131,6 +131,7 @@ func lineage(funcs map[string]*M, target string) *util.Set[string] {
 			inner(d)
 		})
 	}
+	inner(target)
 
 	return &lin
 }
